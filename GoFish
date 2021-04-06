@@ -1,0 +1,215 @@
+<script>
+  var deck = []; //begin with a fresh deck
+  var delta = 0; //incremental counter
+  var gamma = 52; //deck stack
+
+  for (i = 1; i < 14; i++) {
+    var x = i;
+    var y = "Hearts";
+    x = face(x);
+    var card = {
+      number: x,
+      suit: y
+    };
+    deck.push(card);
+  }
+  for (i = 1; i < 14; i++) {
+    var x = i;
+    var y = "Clubs";
+    x = face(x);
+    var card = {
+      number: x,
+      suit: y
+    };
+    deck.push(card);
+  }
+  for (i = 1; i < 14; i++) {
+    var x = i;
+    var y = "Spades";
+    x = face(x);
+    var card = {
+      number: x,
+      suit: y
+    };
+    deck.push(card);
+  }
+  for (i = 1; i < 14; i++) {
+    var x = i;
+    var y = "Diamonds";
+    x = face(x);
+    var card = {
+      number: x,
+      suit: y
+    };
+    deck.push(card);
+  }
+
+  function random_sort(a, b) {
+    return Math.random() - 0.5;
+  }
+  deck.sort(random_sort); //shuffle
+  //face cards
+  function face(x) {
+    switch (x) {
+      case 11:
+        x = "Jack";
+        break;
+      case 12:
+        x = "Queen"
+        break;
+      case 13:
+        x = "King"
+        break;
+      case 1:
+        x = "Ace"
+        break;
+      default:
+        x = x;
+    }
+    return x;
+  }
+  console.log(deck);
+  //deal
+  var p1 = [];
+  var p2 = [];
+  for (i = 0; i < 5; i++) {
+    p1.push(deck.pop());
+    delta++;
+    gamma--;
+    p2.push(deck.pop());
+    delta++;
+    gamma--;
+  }
+
+</script>
+Go Fish
+<html>
+  <div id="check">
+  </div>
+  Player 1:
+  <div id="p1">
+  </div>
+  Player 2:
+  <div id="p2">
+  </div>
+
+</html>
+
+<script>
+  document.getElementById("check").innerHTML = "card stack: " + gamma;
+  document.getElementById("p1").innerHTML = JSON.stringify(p1);
+  document.getElementById("p2").innerHTML = JSON.stringify(p2);
+
+
+
+  function printBtn() {
+    for (var i = 0; i < p1.length; i++) {
+
+      var btn = document.createElement('button');
+      var t = document.createTextNode(p1[i].number);
+      btn.id = i;
+      btn.appendChild(t);
+      document.body.appendChild(btn);
+    }
+  }
+  
+
+</script>
+
+<html>
+  <br>
+
+  <body id="wrapper" onload="printBtn();">
+
+  </body>
+
+</html>
+<script>
+  const wrapper = document.getElementById('wrapper');
+  var x = 0;
+  var goagain = false;
+
+  wrapper.addEventListener('click', (event) => {
+    const isButton = event.target.nodeName === 'BUTTON';
+    if (!isButton) {
+      return;
+    }
+    x = (event.srcElement.id);
+    checkformatch(x);
+    if (goagain == false) {
+      setTimeout(computermove, 35);
+    }
+  })
+
+  function checkformatch(x) {
+    var num = p1[x].number;
+    var count = 0;
+    goagain = false;
+    for (var i = 0; i < p2.length; i++) {
+      if (p2[i].number == num) {
+        count++;
+        p1 = p1.concat(p2.splice(i, 1));
+      }
+    }
+    if (count > 0) {
+      alert("computer gives you " + count + " of its " + num + "'s'");
+      goagain=true;
+    } else {
+      p1 = p1.concat(deck.pop());
+      var fish = p1[p1.length - 1].number;
+      gamma--;
+      delta++;
+      alert("no " + num + " found");
+      if (fish == num) {
+        alert("you fished what you wished go again");
+        goagain = true;
+      }
+    }
+
+    document.getElementById("p1").innerHTML = JSON.stringify(p1);
+    document.getElementById("p2").innerHTML = JSON.stringify(p2);
+    document.getElementById("check").innerHTML = "card stack: " + gamma;
+    var newbutt = document.createElement('button');
+    var num = p1[p1.length - 1].number;
+    var text = document.createTextNode(num);
+    newbutt.id = p1.length - 1;
+    newbutt.appendChild(text);
+    document.body.appendChild(newbutt);
+
+  }
+
+  function computermove() {
+    var num = p2[0].number;
+    var count = 0;
+    alert("computer is asking for " + num);
+    for (var i = 0; i < p1.length; i++) {
+      if (num == p1[i].number) {
+        p2 = p2.concat(p1.splice(i, 1));
+        count++;
+				remove(i);
+      }
+    }
+    if (count > 0) {
+      alert("computer takes " + count + " of your " + num);
+      computermove();
+    } else {
+      p2 = p2.concat(deck.pop());
+      var fish = p2[p2.length - 1].number;
+      gamma--;
+      delta++;
+      if (fish == num) {
+        alert("computer fished what it wished go again");
+        computermove();
+      }
+    }
+    document.getElementById("p1").innerHTML = JSON.stringify(p1);
+    document.getElementById("p2").innerHTML = JSON.stringify(p2);
+    document.getElementById("check").innerHTML = "card stack: " + gamma;
+  }
+
+  function remove(i) {
+    var elem = document.getElementById(i);
+    elem.parentNode.removeChild(elem);
+  }
+
+</script>
