@@ -1,0 +1,273 @@
+<script>
+var deck =[]; //begin with a fresh deck
+var delta =0; //incremental counter
+
+for (i =1 ;i <14;i++){
+  var x = i;
+  var y = "Hearts";
+  x=face(x);
+  var card = {number: x, suit: y};
+  deck.push(card);
+}
+for (i =1 ;i <14;i++){
+  var x = i;
+  var y = "Clubs";
+  x=face(x);
+  var card = {number: x, suit: y};
+  deck.push(card);
+}
+for (i =1 ;i <14;i++){
+  var x = i;
+  var y = "Spades";
+  x=face(x);
+  var card = {number: x, suit: y};
+  deck.push(card);
+}
+for (i =1 ;i <14;i++){
+  var x = i;
+  var y = "Diamonds";
+  x=face(x);
+  var card = {number: x, suit: y};
+  deck.push(card);
+}
+
+function random_sort(a, b) {
+ return Math.random() - 0.5;
+}
+deck.sort(random_sort);//shuffle
+
+//deal with face cards
+function face(x){
+switch(x) {
+  case 11:
+    x = "Jack";
+    break;
+  case 12:
+    x = "Queen"
+    break;
+    case 13:
+    x = "King"
+    break;
+    case 1:
+    x = "Ace"
+    break;
+  default:
+    x=x;
+}
+return x;
+}
+//backwards dealing with face
+
+function unFace(x){
+switch(x) {
+  case "Jack":
+    x = 10
+    break;
+  case "Queen":
+    x = 10
+    break;
+    case "King":
+    x = 10
+    break;
+    case "Ace":
+    x = 1
+    break;
+  default:
+    x=x;
+}
+return x;
+}
+function unFaceAce(x){
+switch(x) {
+  case "Jack":
+    x = 10
+    break;
+  case "Queen":
+    x = 10
+    break;
+    case "King":
+    x = 10
+    break;
+    case "Ace":
+    x = 11
+    break;
+  default:
+    x=x;
+}
+return x;
+}
+
+var p1 = [];
+var p2 =[];
+//dealing algorithm
+p1.push(deck[delta++]);
+p2.push(deck[delta++]);
+p1.push(deck[delta++]);
+p2.push(deck[delta++]);
+
+//writting algorithm
+//document.write("Player's hand: ");
+//document.write(p1[0].number + " " + p1[0].suit + "   " + p1[1].number + " " + p1[1].suit + "</br>");
+//document.write("Computer's hand: ");
+//document.write(p2[0].number + " " + p2[0].suit +"    " + p2[1].number + " " + p2[1].suit + "</br>");
+
+
+var sum = 0;
+var computer=0;
+//sum algorithm
+function playeronesum(){
+for(i=0;i<p1.length;i++){
+var x = p1[i].number;
+x = unFace(x);
+sum += x;
+}
+}//running sum once on start
+for(i=0;i<p1.length;i++){
+sum += unFace(p1[i].number);
+}
+
+
+//computers sum and running once for startup
+for(i=0;i<p2.length;i++){
+computer += unFace(p2[i].number);
+}
+function computersum(){
+if (computer<=16){
+	p2.push(deck[delta++]);
+}
+computer = 0;
+for(i=0;i<p2.length;i++){
+computer += unFace(p2[i].number);
+}
+
+}
+var player1orsum =0;
+var player2orsum = 0;
+
+
+function getorsum(){
+for(i=0;i<p1.length;i++){
+var x = p1[i].number;
+x = unFaceAce(x);
+player1orsum += x;
+}
+for(i=0;i<p2.length;i++){
+var x = p2[i].number;
+x = unFaceAce(x);
+player2orsum += x;
+}
+}
+//run once init
+getorsum();
+
+//document.write("you have: " + sum);
+console.log(deck);
+
+</script>
+
+<html>
+<br>
+
+<p>
+Player's hand:
+<div id="player1">
+</div>
+</p>
+
+<p>
+Computer's hand:
+<div id="player2">
+</div>
+</p>
+
+
+<p id="hit"><button>
+Would you like to hit?
+</button></p>
+
+<p id="stay"><button>
+stay
+</button></p>
+
+
+
+you now have: 
+<div id="sum">
+</div>
+
+or
+<div id="player1or">
+</div>
+
+the computer has:
+<div id ="computer">
+</div>
+
+or
+<div id="player2or">
+</div>
+
+<div id="win">
+</div>
+
+<script>
+//mainly sripts inneraction with html stuff here
+document.getElementById("hit").onclick = function() {playerhit()};
+document.getElementById("sum").innerHTML = sum;
+document.getElementById("stay").onclick = function() {computerlogic()};
+document.getElementById("computer").innerHTML = computer;
+document.getElementById("player1or").innerHTML = player1orsum;
+document.getElementById("player2or").innerHTML = player2orsum;
+function playerhit() {
+  var x = 0;
+  p1.push(deck[delta++]);
+  sum = 0;
+  playeronesum();
+  x = sum;
+  player1orsum=0;
+  player2orsum=0;
+  getorsum();
+  document.getElementById("player2or").innerHTML = player2orsum;
+	document.getElementById("player1or").innerHTML = player1orsum;
+  document.getElementById("sum").innerHTML = x;
+  document.getElementById("player1").innerHTML = JSON.stringify(p1);
+}
+
+document.getElementById("player1").innerHTML = JSON.stringify(p1);
+document.getElementById("player2").innerHTML = JSON.stringify(p2);
+//
+function computerlogic(){
+computersum();
+document.getElementById("player2").innerHTML = JSON.stringify(p2);
+document.getElementById("computer").innerHTML = computer;
+winfunc();
+}
+function winfunc(){
+var onetotal = 0;
+var twototal = 0;
+if (sum > player1orsum && sum <=21){
+onetotal = sum;
+}
+else{
+onetotal = player1orsum;
+}
+
+
+if (computer > player2orsum && computer <=21){
+twototal = computer;
+}
+else{
+twototal = player2orsum;
+}
+
+
+if (onetotal>twototal&&onetotal<=21){
+document.getElementById("win").innerHTML = "You win!: " +onetotal;
+}
+else{
+document.getElementById("win").innerHTML = "You lose: "+twototal;
+}
+}
+
+</script>
+</html>
